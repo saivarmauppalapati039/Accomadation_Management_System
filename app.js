@@ -18,7 +18,7 @@ const pool = new Pool({
 
 // 🛡️ Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Vite default
+  origin: process.env.FRONTEND_URL || 'https://accomadation-management-system-frontend.onrender.com', // Vite default
   credentials: true
 }));
 app.use(express.json());
@@ -27,11 +27,11 @@ app.use(express.json());
 app.use(
   session({
     store: new PgSession({ pool }),
-    secret: process.env.SESSION_SECRET || 'your_strong_secret_here_please_change',
+    secret: process.env.SESSION_SECRET  ,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 // 24 hours
     }

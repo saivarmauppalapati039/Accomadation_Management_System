@@ -31,8 +31,12 @@ module.exports = (sequelize, DataTypes) => {
           isEmail: true,
         },
       },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       userType: {
-        type: DataTypes.ENUM('visitior', "hostler", "admin"),
+        type: DataTypes.ENUM('visitors', 'hostelers', 'admin'),
         allowNull: false,
         field: 'user_type', // maps to "user_type" in DB
       },

@@ -42,7 +42,7 @@ app.use(
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/rooms', require('./routes/roomRoutes'));
-// app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/bookings', require('./routes/bookingRoutes'));
 
 // 🏠 Fallback route
 app.get('/', (req, res) => {

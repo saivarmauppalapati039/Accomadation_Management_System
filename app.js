@@ -34,7 +34,8 @@ app.use(
       secure: true,
       httpOnly: true,
       sameSite: 'none',
-      maxAge: 1000 * 60 * 60 * 24 // 24 hours
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      path: '/'
     }
   })
 );

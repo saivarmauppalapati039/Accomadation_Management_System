@@ -4,16 +4,45 @@ const { sequelize } = require('../config/db'); // for transactions
 
 // POST /api/bookings → ONLY hostelers can book
 const createBooking = async (req, res) => {
-  if (req.user.userType !== 'hostelers') {
-    return res.status(403).json({ error: 'Only hostelers can book rooms' });
-  }
-
+  
   const t = await sequelize.transaction();
   try {
-    const { roomId, checkIn, checkOut } = req.body;
-    // ✅ Use req.user.id (not req.user.userId)
-    const userId = req.user.id;
+    const { roomId, checkIn, checkOut, userId } = req.body;
+    
+    // Validate dates
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+    if (checkOutDate <= checkInDate) {
+      return res.status(400).json({ error: 'Check-out must be after check-in' });
+    }
 
+    // Check room
+    const room = await Room.findByPk(roomId, { transaction: t });
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+    if (room.status !== 'available') {
+      return res.status(400).json({ error: 'Room is not available' });
+    }
+
+    // Calculate total (nights × price)
+    const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+    const totalAmount = parseFloat((room.price * nights).toFixed(2));
+
+    // Create booking
+    const booking = await Booking.create({
+      userId,
+      roomId,
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      totalAmount,
+      status: 'confirmed'
+    }, { transaction: t });
+
+    // Mark room as occupiedoccupied' }, { transaction: t });
+    await t.commit();
+
+    res.status(201).json(booking);
     // ... rest of the function (no other changes needed)
   } catch (err) {
     await t.rollback();

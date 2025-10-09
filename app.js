@@ -10,7 +10,7 @@ const FRONTEND_URL = 'https://accomadation-management-system-frontend.onrender.c
 
 app.use(cors({
   origin: FRONTEND_URL | process.env.FRONTEND_URL,
-  credentials: false // Not needed for JWT
+  credentials: true // Not needed for JWT
 }));
 
 app.use(express.json());

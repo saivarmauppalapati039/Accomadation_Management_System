@@ -4,7 +4,8 @@ const { User } = require('../config/db');
 // GET /api/profile → Get own profile
 const getOwnProfile = async (req, res) => {
   try {
-    const user = await User.findByPk(req.session.userId);
+    // ✅ Use req.user.id (from JWT)
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -19,7 +20,8 @@ const getOwnProfile = async (req, res) => {
 const updateOwnProfile = async (req, res) => {
   try {
     const { name, email } = req.body;
-    const user = await User.findByPk(req.session.userId);
+    // ✅ Use req.user.id
+    const user = await User.findByPk(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }

@@ -1,51 +1,49 @@
 // controllers/authController.js
 const bcrypt = require('bcrypt');
-const { User } = require('../config/db'); // adjust based on your model export
+const jwt = require('jsonwebtoken');
+const { User } = require('../config/db');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your_strong_secret_here';
 
 const signup = async (req, res) => {
   try {
     const { email, password, name, userType = 'visitors' } = req.body;
 
-    // Validate required fields
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'Email, name, and password are required' });
     }
 
-    // Only allow valid user types
     const validTypes = ['visitors', 'hostelers', 'admin'];
     if (!validTypes.includes(userType)) {
       return res.status(400).json({ error: 'Invalid user type' });
     }
 
-    // Check if user already exists
-    const existingUser = await User?.findOne({ where: { email } });
+    const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists with this email' });
     }
 
-    // Hash password with bcrypt (salt handled automatically)
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
     const newUser = await User.create({
       name,
       email,
-      password: hashedPassword, // store hashed password
+      password: hashedPassword,
       userType
     });
 
-    // Automatically log in the user after signup (optional)
-    req.session.userId = newUser.id;
-    req.session.userType = newUser.userType;
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email, userType: newUser.userType },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
-    // Return success (exclude password)
     const { password: _, ...userWithoutPassword } = newUser.toJSON();
     res.status(201).json({
       success: true,
+      token,
       user: userWithoutPassword
     });
-
   } catch (err) {
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Failed to create account' });
@@ -61,11 +59,15 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    req.session.userId = user.id;
-    req.session.userType = user.userType;
+    const token = jwt.sign(
+      { id: user.id, email: user.email, userType: user.userType },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
     res.json({
       success: true,
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -78,10 +80,8 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
-  req.session.destroy(err => {
-    if (err) return res.status(500).json({ error: 'Logout failed' });
-    res.json({ success: true });
-  });
+  // JWT is stateless - just clear token on frontend
+  res.json({ success: true });
 };
 
-module.exports = { login, logout, signup};
+module.exports = { login, logout, signup };

@@ -1,5 +1,6 @@
 // controllers/userController.js
 const { User } = require('../config/db');
+const bcrypt = require("bcrypt");
 
 // GET /api/profile → Get own profile
 const getOwnProfile = async (req, res) => {
@@ -90,6 +91,7 @@ const createUser = async (req, res) => {
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({ error: 'Email already exists' });
     }
+    console.error(err);
     res.status(500).json({ error: 'Failed to create user' });
   }
 };

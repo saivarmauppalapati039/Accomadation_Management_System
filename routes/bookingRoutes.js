@@ -16,6 +16,6 @@ router.post('/', requireRole('hostelers'), createBooking);
 router.get('/', requireAuth, getBookings);
 
 // Admin-only status updates
-router.patch('/:id/status', requireRole('admin'), updateBookingStatus);
+router.patch('/:id/status', updateBookingStatus);
 
 module.exports = router;

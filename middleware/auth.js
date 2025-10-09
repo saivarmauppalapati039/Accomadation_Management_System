@@ -20,6 +20,7 @@ const requireAuth = (req, res, next) => {
 
 const requireRole = (...roles) => {
   return (req, res, next) => {
+    console.log(req);
     if (!roles.includes(req.user.userType)) {
       return res.status(403).json({ error: 'Access denied' });
     }

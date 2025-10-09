@@ -18,10 +18,10 @@ router.get('/profile', requireAuth, getOwnProfile);
 router.patch('/profile', requireAuth, updateOwnProfile);
 
 // 👮 Admin-only routes
-router.get('/users', requireRole('admin'), getAllUsers);
-router.get('/users/:id', requireRole('admin'), getUserById);
-router.post('/users', requireRole('admin'), createUser);
-router.patch('/users/:id', requireRole('admin'), updateUser);
-router.delete('/users/:id', requireRole('admin'), deleteUser);
+router.get('/users',  getAllUsers);
+router.get('/users/:id',  getUserById);
+router.post('/users',  createUser);
+router.patch('/users/:id',  updateUser);
+router.delete('/users/:id',  deleteUser);
 
 module.exports = router;

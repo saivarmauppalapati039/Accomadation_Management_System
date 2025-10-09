@@ -7,17 +7,17 @@ const {
   updateRoom,
   deleteRoom
 } = require('../controllers/roomController');
-const { requireRole } = require('../middleware/auth');
+const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
 // Public: all users can read
-router.get('/', getRooms);
-router.get('/:id', getRoomById);
+router.get('/', requireAuth, getRooms);
+router.get('/:id', requireAuth, getRoomById);
 
 // Admin-only: write operations
-router.post('/', createRoom);
-router.patch('/:id', updateRoom);
-router.delete('/:id', deleteRoom);
+router.post('/', requireAuth, createRoom);
+router.patch('/:id', requireAuth, updateRoom);
+router.delete('/:id', requireAuth, deleteRoom);
 
 module.exports = router;

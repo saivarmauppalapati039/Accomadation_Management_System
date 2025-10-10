@@ -10,12 +10,12 @@ const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // 🔒 Only hostelers can book
-router.post('/', requireAuth, createBooking);
+router.post('/',  createBooking);
 
 // Hostelers (own) + admin (all)
-router.get('/', requireAuth, getBookings);
+router.get('/', getBookings);
 
 // Admin-only status updates
-router.patch('/:id/status', requireAuth,updateBookingStatus);
+router.patch('/:id/status', updateBookingStatus);
 
 module.exports = router;
